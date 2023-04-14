@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+
 export default function Escrow({
   address,
   arbiter,
@@ -5,6 +7,25 @@ export default function Escrow({
   value,
   handleApprove,
 }) {
+  const [approved, setApproved] = useState(false);
+
+  useEffect(() => {
+    // Check if the approval status is saved in local storage
+    const savedApproval = localStorage.getItem(address);
+
+    if (savedApproval !== null) {
+      setApproved(JSON.parse(savedApproval));
+    }
+  }, [address]);
+
+  async function handleClick() {
+    await handleApprove();
+
+    // Save the approval status to local storage
+    localStorage.setItem(address, JSON.stringify(true));
+    setApproved(true);
+  }
+
   return (
     <div className="existing-contract">
       <ul className="fields">
@@ -18,18 +39,17 @@ export default function Escrow({
         </li>
         <li>
           <div> Value </div>
-          <div> {value} </div>
+          <div> {value} ETH </div>
         </li>
         <div
-          className="button"
+          className={`button ${approved ? 'complete' : ''}`}
           id={address}
           onClick={(e) => {
             e.preventDefault();
-
-            handleApprove();
+            handleClick();
           }}
         >
-          Approve
+          {approved ? "✓ It's been approved!" : 'Approve'}
         </div>
       </ul>
     </div>

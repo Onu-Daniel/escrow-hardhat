@@ -2,12 +2,23 @@ import { ethers } from 'ethers';
 import { useEffect, useState } from 'react';
 import deploy from './deploy';
 import Escrow from './Escrow';
+import Header from './components/Header'
+import Footer from './components/Footer'
 
 const provider = new ethers.providers.Web3Provider(window.ethereum);
 
 export async function approve(escrowContract, signer) {
   const approveTxn = await escrowContract.connect(signer).approve();
   await approveTxn.wait();
+}
+
+function clearLocalStorage() {
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key.startsWith('escrow_contract_')) {
+      localStorage.removeItem(key);
+    }
+  }
 }
 
 function App() {
@@ -24,12 +35,16 @@ function App() {
     }
 
     getAccounts();
+
+    const storedEscrows = Object.keys(localStorage).filter(key => key.startsWith('escrow_contract_')).map(key => JSON.parse(localStorage.getItem(key)));
+    setEscrows(storedEscrows);
   }, [account]);
 
   async function newContract() {
     const beneficiary = document.getElementById('beneficiary').value;
     const arbiter = document.getElementById('arbiter').value;
-    const value = ethers.BigNumber.from(document.getElementById('wei').value);
+    const ethValue = document.getElementById('eth').value; // Get the input in ether
+    const value = ethers.utils.parseEther(ethValue); // Convert to wei
     const escrowContract = await deploy(signer, arbiter, beneficiary, value);
 
 
@@ -37,7 +52,7 @@ function App() {
       address: escrowContract.address,
       arbiter,
       beneficiary,
-      value: value.toString(),
+      value: ethers.utils.formatEther(value),
       handleApprove: async () => {
         escrowContract.on('Approved', () => {
           document.getElementById(escrowContract.address).className =
@@ -51,10 +66,18 @@ function App() {
     };
 
     setEscrows([...escrows, escrow]);
+
+    localStorage.setItem('escrow_contract_' + escrowContract.address, JSON.stringify(escrow));
   }
 
-  return (
-    <>
+  function remove() {
+    clearLocalStorage();
+    setEscrows([]);
+  }
+
+  return (    
+    <div className='fullcontainer'>
+      <Header />
       <div className="contract">
         <h1> New Contract </h1>
         <label>
@@ -68,8 +91,8 @@ function App() {
         </label>
 
         <label>
-          Deposit Amount (in Wei)
-          <input type="text" id="wei" />
+          Deposit Amount (in ETH)
+          <input type="text" id="eth" />
         </label>
 
         <div
@@ -87,14 +110,15 @@ function App() {
 
       <div className="existing-contracts">
         <h1> Existing Contracts </h1>
-
+        <button className='button delete' onClick={remove}>Clear All</button>
         <div id="container">
           {escrows.map((escrow) => {
             return <Escrow key={escrow.address} {...escrow} />;
           })}
         </div>
       </div>
-    </>
+      <Footer />
+    </div>
   );
 }
 

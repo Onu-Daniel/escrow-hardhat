@@ -1,12 +1,60 @@
+.fullcontainer {
+  width: 100vw;
+}
+
 body {
   background-color: #eee;
   display: flex;
   font-family: 'Muli', sans-serif;
 }
 
+.Header {
+  background-color: #040273;
+
+}
+.HeaderTop {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.HeaderTop > * {
+  margin: 20px 10px;
+}
+
+.HeaderTop input {
+  width: 70vw;
+  height: 5vh;
+  border: 2px solid white;
+  border-radius: 10px;
+  font-family: cursive;
+  font-size: large;
+}
+
+.HeaderTop button {
+  height: 6vh;
+  border: 2px solid white;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  font-family: cursive;
+}
+
+a {
+  color: white;
+  text-decoration: none;
+}
+
+.HeaderTop div {
+  background-color: white;
+}
+
+/*  */
+
 .contract, .existing-contracts {
   margin: 20px;
   display: inline-block;
+  width: 40%;
   padding: 40px;
   border: 1px solid #ddd;
   background-color: #fff;
@@ -32,7 +80,7 @@ input[type="text"] {
 }
 
 .button {
-  background-color: #f58427;
+  background-color: #040273;
   color: white;
   text-align: center;
   font-weight: bold;
@@ -67,4 +115,25 @@ input[type="text"] {
 .existing-contract .complete {
   color: #5aa75a;
   text-align: center;
+}
+
+.delete {
+ background-color: red;
+}
+
+/* Footer */
+.Footer {
+  display: flex;
+  background-color: #040273;
+  margin-bottom: 0;
+  padding-bottom: 0;
+  height: 10vh;
+  z-index: -10px;
+  color: white;
+  text-align: center;
+  justify-content: center;
+}
+
+.Footer a {
+  color: white;
 }
